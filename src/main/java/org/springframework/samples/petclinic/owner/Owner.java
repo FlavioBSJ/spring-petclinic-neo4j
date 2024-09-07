@@ -19,17 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.util.Assert;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.NotBlank;
 
@@ -42,26 +37,24 @@ import jakarta.validation.constraints.NotBlank;
  * @author Michael Isvy
  * @author Oliver Drotbohm
  */
-@Entity
-@Table(name = "owners")
+
+@Node("Owner")
 public class Owner extends Person {
 
-	@Column(name = "address")
+	@Property(name = "address")
 	@NotBlank
 	private String address;
 
-	@Column(name = "city")
+	@Property(name = "city")
 	@NotBlank
 	private String city;
 
-	@Column(name = "telephone")
+	@Property(name = "telephone")
 	@NotBlank
 	@Pattern(regexp = "\\d{10}", message = "Telephone must be a 10-digit number")
 	private String telephone;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "owner_id")
-	@OrderBy("name")
+	@Relationship(type = "OWNS", direction = Relationship.Direction.OUTGOING)
 	private List<Pet> pets = new ArrayList<>();
 
 	public String getAddress() {
@@ -115,8 +108,8 @@ public class Owner extends Person {
 	public Pet getPet(Integer id) {
 		for (Pet pet : getPets()) {
 			if (!pet.isNew()) {
-				Integer compId = pet.getId();
-				if (compId.equals(id)) {
+				Long compId = pet.getId();
+				if (compId.equals(Long.valueOf(id))) {
 					return pet;
 				}
 			}
@@ -133,10 +126,9 @@ public class Owner extends Person {
 		name = name.toLowerCase();
 		for (Pet pet : getPets()) {
 			String compName = pet.getName();
-			if (compName != null && compName.equalsIgnoreCase(name)) {
-				if (!ignoreNew || !pet.isNew()) {
+			if (compName != null && compName.equalsIgnoreCase(name) && (!ignoreNew || !pet.isNew())) {
 					return pet;
-				}
+
 			}
 		}
 		return null;

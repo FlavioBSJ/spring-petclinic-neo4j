@@ -19,8 +19,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,13 +35,13 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Sam Brannen
  * @author Michael Isvy
  */
-public interface OwnerRepository extends Repository<Owner, Integer> {
+public interface OwnerRepository extends Neo4jRepository<Owner, Long> {
 
 	/**
 	 * Retrieve all {@link PetType}s from the data store.
 	 * @return a Collection of {@link PetType}s.
 	 */
-	@Query("SELECT ptype FROM PetType ptype ORDER BY ptype.name")
+	@Query("MATCH (ptype:PetType) RETURN ptype ORDER BY ptype.name")
 	@Transactional(readOnly = true)
 	List<PetType> findPetTypes();
 
@@ -53,7 +53,10 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * found)
 	 */
 
-	@Query("SELECT DISTINCT owner FROM Owner owner left join  owner.pets WHERE owner.lastName LIKE :lastName% ")
+	@Query(value = "MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet) "
+			+ "WHERE owner.lastName STARTS WITH $lastName " + "RETURN DISTINCT owner SKIP $skip LIMIT $limit",
+			countQuery = "MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet)\n"
+					+ "WHERE owner.lastName STARTS WITH $lastName " + "RETURN DISTINCT COUNT(owner)")
 	@Transactional(readOnly = true)
 	Page<Owner> findByLastName(@Param("lastName") String lastName, Pageable pageable);
 
@@ -62,21 +65,8 @@ public interface OwnerRepository extends Repository<Owner, Integer> {
 	 * @param id the id to search for
 	 * @return the {@link Owner} if found
 	 */
-	@Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")
+	@Query("MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet) WHERE ID(owner) = $id RETURN owner")
 	@Transactional(readOnly = true)
 	Owner findById(@Param("id") Integer id);
-
-	/**
-	 * Save an {@link Owner} to the data store, either inserting or updating it.
-	 * @param owner the {@link Owner} to save
-	 */
-	void save(Owner owner);
-
-	/**
-	 * Returns all the owners from data store
-	 **/
-	@Query("SELECT owner FROM Owner owner")
-	@Transactional(readOnly = true)
-	Page<Owner> findAll(Pageable pageable);
 
 }

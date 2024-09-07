@@ -15,18 +15,15 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.samples.petclinic.model.NamedEntity;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 /**
  * Models a {@link Vet Vet's} specialty (for example, dentistry).
  *
  * @author Juergen Hoeller
  */
-@Entity
-@Table(name = "specialties")
+@Node("Specialties")
 public class Specialty extends NamedEntity {
 
 }
