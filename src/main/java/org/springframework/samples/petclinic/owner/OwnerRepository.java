@@ -53,19 +53,24 @@ public interface OwnerRepository extends Neo4jRepository<Owner, Long> {
 	 * found)
 	 */
 
-	@Query(value = "MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet) "
-			+ "WHERE owner.lastName STARTS WITH $lastName " + "RETURN DISTINCT owner SKIP $skip LIMIT $limit",
-			countQuery = "MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet)\n"
-					+ "WHERE owner.lastName STARTS WITH $lastName " + "RETURN DISTINCT COUNT(owner)")
+
+	@Query(value = "MATCH (owner:Owner)-[r:OWNS]->(m:Pet) " +
+		"WHERE owner.last_name STARTS WITH $last_name " +
+		"RETURN DISTINCT owner," +
+		"collect(r), " +
+		"       collect(m) as pets" +
+		" SKIP $skip LIMIT $limit",
+			countQuery = "MATCH (owner:Owner)-[r:OWNS]->(m:Pet) "
+					+ "WHERE owner.last_name STARTS WITH $last_name " + "RETURN DISTINCT COUNT(owner)")
 	@Transactional(readOnly = true)
-	Page<Owner> findByLastName(@Param("lastName") String lastName, Pageable pageable);
+	Page<Owner> findByLastName(@Param("last_name") String lastName, Pageable pageable);
 
 	/**
 	 * Retrieve an {@link Owner} from the data store by id.
 	 * @param id the id to search for
 	 * @return the {@link Owner} if found
 	 */
-	@Query("MATCH (owner:Owner) OPTIONAL MATCH (owner)-[:OWNS]->(pet:Pet) WHERE ID(owner) = $id RETURN owner")
+	@Query("MATCH (owner:Owner)-[owns:OWNS]->(pet:Pet) WHERE ID(owner) = $id RETURN owner, owns, pet")
 	@Transactional(readOnly = true)
 	Owner findById(@Param("id") Integer id);
 

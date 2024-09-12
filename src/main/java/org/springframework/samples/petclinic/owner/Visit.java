@@ -15,12 +15,16 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.samples.petclinic.model.BaseEntity;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -30,8 +34,14 @@ import jakarta.validation.constraints.NotBlank;
  * @author Ken Krebs
  * @author Dave Syer
  */
+@Getter
+@Setter
 @Node("Visits")
-public class Visit extends BaseEntity {
+public class Visit implements Serializable {
+
+	@Id
+	@GeneratedValue
+	private Long id;
 
 	@Property(name = "visit_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -47,20 +57,10 @@ public class Visit extends BaseEntity {
 		this.date = LocalDate.now();
 	}
 
-	public LocalDate getDate() {
-		return this.date;
+
+	public boolean isNew() {
+		return this.id == null;
 	}
 
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
 
 }

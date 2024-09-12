@@ -16,10 +16,11 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
@@ -33,12 +34,15 @@ import org.springframework.samples.petclinic.model.NamedEntity;
  * @author Juergen Hoeller
  * @author Sam Brannen
  */
-@Node("Pets")
+@Getter
+@Setter
+@Node("Pet")
 public class Pet extends NamedEntity {
 
 	@Property(name = "birth_date")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate birthDate;
+
 
 	@Relationship(type = "HAS_TYPE", direction = Relationship.Direction.OUTGOING)
 	private PetType type;
@@ -46,25 +50,6 @@ public class Pet extends NamedEntity {
 	@Relationship(type = "HAS_VISIT", direction = Relationship.Direction.OUTGOING)
 	private Set<Visit> visits = new LinkedHashSet<>();
 
-	public void setBirthDate(LocalDate birthDate) {
-		this.birthDate = birthDate;
-	}
-
-	public LocalDate getBirthDate() {
-		return this.birthDate;
-	}
-
-	public PetType getType() {
-		return this.type;
-	}
-
-	public void setType(PetType type) {
-		this.type = type;
-	}
-
-	public Collection<Visit> getVisits() {
-		return this.visits;
-	}
 
 	public void addVisit(Visit visit) {
 		getVisits().add(visit);

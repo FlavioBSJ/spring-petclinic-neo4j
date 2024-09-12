@@ -23,7 +23,7 @@ import org.springframework.samples.petclinic.model.NamedEntity;
  *
  * @author Juergen Hoeller
  */
-@Node("Specialties")
+@Node("Specialty")
 public class Specialty extends NamedEntity {
 
 }

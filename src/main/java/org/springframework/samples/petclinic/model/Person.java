@@ -16,13 +16,22 @@
 package org.springframework.samples.petclinic.model;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.neo4j.core.schema.Property;
+
 
 /**
  * Simple JavaBean domain object representing an person.
  *
  * @author Ken Krebs
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Person extends BaseEntity {
 
 	@Property(name = "first_name")
@@ -33,20 +42,6 @@ public class Person extends BaseEntity {
 	@NotBlank
 	private String lastName;
 
-	public String getFirstName() {
-		return this.firstName;
-	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return this.lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
 
 }

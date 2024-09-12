@@ -15,13 +15,14 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.samples.petclinic.model.NamedEntity;
 
 /**
  * @author Juergen Hoeller Can be Cat, Dog, Hamster...
  */
-@Node("Types")
+@Node("Type")
 public class PetType extends NamedEntity {
 
 }

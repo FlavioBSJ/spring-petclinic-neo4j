@@ -18,6 +18,10 @@ package org.springframework.samples.petclinic.owner;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
@@ -37,9 +41,13 @@ import jakarta.validation.constraints.NotBlank;
  * @author Michael Isvy
  * @author Oliver Drotbohm
  */
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Node("Owner")
-public class Owner extends Person {
+public class Owner extends Person{
+
 
 	@Property(name = "address")
 	@NotBlank
@@ -55,35 +63,9 @@ public class Owner extends Person {
 	private String telephone;
 
 	@Relationship(type = "OWNS", direction = Relationship.Direction.OUTGOING)
-	private List<Pet> pets = new ArrayList<>();
+	private List<Pet> pets =  new ArrayList<>();
 
-	public String getAddress() {
-		return this.address;
-	}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getCity() {
-		return this.city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getTelephone() {
-		return this.telephone;
-	}
-
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
-
-	public List<Pet> getPets() {
-		return this.pets;
-	}
 
 	public void addPet(Pet pet) {
 		if (pet.isNew()) {
