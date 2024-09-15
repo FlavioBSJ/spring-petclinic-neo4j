@@ -54,7 +54,7 @@ public interface OwnerRepository extends Neo4jRepository<Owner, Long> {
 	 */
 
 
-	@Query(value = "MATCH (owner:Owner)-[r:OWNS]->(m:Pet) " +
+	@Query(value = "OPTIONAL MATCH (owner:Owner)-[r:OWNS]->(m:Pet) " +
 		"WHERE owner.last_name STARTS WITH $last_name " +
 		"RETURN DISTINCT owner," +
 		"collect(r), " +
@@ -70,7 +70,7 @@ public interface OwnerRepository extends Neo4jRepository<Owner, Long> {
 	 * @param id the id to search for
 	 * @return the {@link Owner} if found
 	 */
-	@Query("MATCH (owner:Owner)-[owns:OWNS]->(pet:Pet) WHERE ID(owner) = $id RETURN owner, owns, pet")
+	@Query("OPTIONAL MATCH (owner:Owner)-[owns:OWNS]->(pet:Pet) WHERE ID(owner) = $id RETURN owner, owns, pet")
 	@Transactional(readOnly = true)
 	Owner findById(@Param("id") Integer id);
 

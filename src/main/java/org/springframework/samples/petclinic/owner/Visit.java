@@ -36,7 +36,7 @@ import jakarta.validation.constraints.NotBlank;
  */
 @Getter
 @Setter
-@Node("Visits")
+@Node("Visit")
 public class Visit implements Serializable {
 
 	@Id

@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,10 @@ public interface VetRepository extends Repository<Vet, Long> {
 	 * Retrieve all <code>Vet</code>s from the data store.
 	 * @return a <code>Collection</code> of <code>Vet</code>s
 	 */
+	@Query(value = "OPTIONAL MATCH (vet:Vet)-[r:HAS_SPECIALTY]->(m:Specialty) " +
+		"RETURN DISTINCT vet," +
+		"collect(r), " +
+		"       collect(m) as specialties")
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Collection<Vet> findAll() throws DataAccessException;
@@ -51,6 +56,12 @@ public interface VetRepository extends Repository<Vet, Long> {
 	 * @return
 	 * @throws DataAccessException
 	 */
+	@Query(value = "OPTIONAL MATCH (vet:Vet)-[r:HAS_SPECIALTY]->(m:Specialty) " +
+		"RETURN DISTINCT vet," +
+		"collect(r), " +
+		"       collect(m) as specialties" +
+		" SKIP $skip LIMIT $limit",
+		countQuery = "OPTIONAL MATCH (vet:Vet)-[r:HAS_SPECIALTY]->(m:Specialty) RETURN DISTINCT COUNT(vet)")
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Page<Vet> findAll(Pageable pageable) throws DataAccessException;

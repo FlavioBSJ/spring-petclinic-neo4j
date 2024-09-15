@@ -15,27 +15,23 @@
  */
 package org.springframework.samples.petclinic.vet;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import jakarta.xml.bind.annotation.XmlElement;
+import org.springframework.samples.petclinic.model.Person;
 
 /**
  * Simple JavaBean domain object representing a veterinarian.
@@ -49,33 +45,12 @@ import jakarta.xml.bind.annotation.XmlElement;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Node("Vets")
-public class Vet implements Serializable {
+@Node("Vet")
+public class Vet extends Person {
 
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	@Property(name = "name")
-	private String name;
-
-
-	@Property(name = "first_name")
-	@NotBlank
-	private String firstName;
-
-	@Property(name = "last_name")
-	@NotBlank
-	private String lastName;
-
-
-	@Relationship(type = "HAS_SPECIALTY", direction = Relationship.Direction.INCOMING)
+	@Relationship(type = "HAS_SPECIALTY", direction = Relationship.Direction.OUTGOING)
 	private Set<Specialty> specialties;
 
-
-	public boolean isNew() {
-		return this.id == null;
-	}
 
 
 	protected Set<Specialty> getSpecialtiesInternal() {
